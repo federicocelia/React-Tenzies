@@ -19,7 +19,18 @@ export default function App() {
   }
 
   function rollDice() {
-    setDiceValues(generateAllNewDice(6));
+    setDiceValues((prev) => {
+      return prev.map((dice) => {
+        if (!dice.isHeld) {
+          return {
+            ...dice,
+            value: Math.ceil(Math.random() * 6),
+          };
+        } else {
+          return dice;
+        }
+      });
+    });
   }
 
   function hold(id) {
