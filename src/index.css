@@ -10,7 +10,7 @@
 }
 
 body {
-  font-family: Inter, sans-serif;
+  font-family: Karla, sans-serif;
   padding: 1.25rem;
   margin: 0;
   font-family: Inter, sans-serif;
@@ -33,14 +33,16 @@ main {
   height: 100%;
   border-radius: 1rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 h1 {
   margin: 0;
 }
 
-.die-container {
+.dice-container {
   width: 100%;
   /* height: 5.25rem; */
   display: grid;
@@ -50,7 +52,7 @@ h1 {
   grid-template: repeat(2, 1fr) / repeat(5, 1fr);
 }
 
-.die {
+.dice {
   height: 36px;
   width: 36px;
   font-size: 1.25rem;
@@ -58,7 +60,7 @@ h1 {
 }
 
 button {
-  font-family: Inter, sans-serif;
+  font-family: Karla, sans-serif;
   color: var(--die-color);
   cursor: pointer;
   box-sizing: border-box;
