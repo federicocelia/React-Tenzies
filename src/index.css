@@ -2,7 +2,35 @@
   box-sizing: border-box;
 }
 
+:root {
+  --background-color: rgba(11, 36, 52, 1);
+  --main-background-color: rgba(245, 245, 245, 1);
+}
+
 body {
+  padding: 1.25rem;
   margin: 0;
   font-family: Inter, sans-serif;
+  background-color: var(--background-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+div#root {
+  height: 100%;
+  width: 100%;
+  max-width: 400px;
+  max-height: 400px;
+}
+
+main {
+  background-color: var(--main-background-color);
+  height: 100%;
+  border-radius: 1rem;
+}
+
+h1 {
+  margin: 0;
 }
