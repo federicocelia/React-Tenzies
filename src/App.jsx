@@ -1,6 +1,6 @@
-import "./App.css";
 import Die from "./components/Die.jsx";
 import { useState } from "react";
+import { nanoid } from "nanoid";
 
 export default function App() {
   const [diceValues, setDiceValues] = useState(generateAllNewDice(6));
@@ -9,7 +9,11 @@ export default function App() {
     //max is the highest value you want to have on the die
     const Alldices = [];
     for (let i = 0; i < 10; i++) {
-      Alldices.push(Math.floor(Math.random() * max + 1));
+      Alldices.push({
+        value: Math.floor(Math.random() * max + 1),
+        isHeld: false,
+        id: nanoid(),
+      });
     }
     return Alldices;
   }
@@ -19,13 +23,15 @@ export default function App() {
   }
 
   const diceElements = diceValues.map((value) => {
-    return <Die value={value} />;
+    return <Die key={value.id} value={value.value} />;
   });
 
   return (
     <main>
       <div className="dice-container">{diceElements}</div>
-      <button onClick={rollDice}>Roll Dice</button>
+      <button className="roll-dice" onClick={rollDice}>
+        Roll Dice
+      </button>
     </main>
   );
 }
