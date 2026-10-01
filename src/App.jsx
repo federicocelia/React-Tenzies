@@ -22,8 +22,31 @@ export default function App() {
     setDiceValues(generateAllNewDice(6));
   }
 
+  function hold(id) {
+    setDiceValues((prev) => {
+      return prev.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            isHeld: !item.isHeld,
+          };
+        } else {
+          return item;
+        }
+      });
+    });
+    console.log(id);
+  }
+
   const diceElements = diceValues.map((value) => {
-    return <Die key={value.id} value={value.value} />;
+    return (
+      <Die
+        key={value.id}
+        value={value.value}
+        isHeld={value.isHeld}
+        hold={() => hold(value.id)}
+      />
+    );
   });
 
   return (
