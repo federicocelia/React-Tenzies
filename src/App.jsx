@@ -1,8 +1,10 @@
 import Die from "./components/Die.jsx";
 import { useState } from "react";
 import { nanoid } from "nanoid";
+import { ConfettiDrop } from "../src/components/Confetti.jsx";
 
 export default function App() {
+  let gameWon = false;
   const [diceValues, setDiceValues] = useState(generateAllNewDice(6));
 
   function generateAllNewDice(max) {
@@ -46,7 +48,6 @@ export default function App() {
         }
       });
     });
-    console.log(id);
   }
 
   const diceElements = diceValues.map((value) => {
@@ -60,12 +61,31 @@ export default function App() {
     );
   });
 
+  const allHeld = diceValues.every((dice) => dice.isHeld);
+  const firstDiceValue = diceValues[0]?.value;
+  const allSameValue = diceValues.every(
+    (dice) => dice.value === firstDiceValue,
+  );
+
+  if (allHeld && allSameValue) {
+    console.log("Game Won!");
+    gameWon = true;
+  }
+
   return (
-    <main>
-      <div className="dice-container">{diceElements}</div>
-      <button className="roll-dice" onClick={rollDice}>
-        Roll Dice
-      </button>
-    </main>
+    <>
+      {gameWon ? <ConfettiDrop /> : null}
+      <main>
+        <h1 className="title">Tenzies</h1>
+        <p className="instructions">
+          Roll until all dice are the same. Click each die to freeze it at its
+          current value between rolls.
+        </p>
+        <div className="dice-container">{diceElements}</div>
+        <button className="roll-dice" onClick={rollDice}>
+          {gameWon ? "New Game" : "Roll Dice"}
+        </button>
+      </main>
+    </>
   );
 }
