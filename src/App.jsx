@@ -1,10 +1,9 @@
 import Die from "./components/Die.jsx";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { ConfettiDrop } from "../src/components/Confetti.jsx";
 
 export default function App() {
-  let gameWon = false;
   const [diceValues, setDiceValues] = useState(generateAllNewDice(6));
 
   function generateAllNewDice(max) {
@@ -21,17 +20,32 @@ export default function App() {
   }
 
   function rollDice() {
+    hasRolledRef.current = true;
+    foundMatchingValueRef.current = false;
+
+    const matchingBeforeRoll = diceValues.filter(
+      (die) => !die.isHeld && die.value === targetValue,
+    ).length;
+
     setDiceValues((prev) => {
-      return prev.map((dice) => {
+      const newDice = prev.map((dice) => {
         if (!dice.isHeld) {
           return {
             ...dice,
             value: Math.ceil(Math.random() * 6),
           };
-        } else {
-          return dice;
         }
+
+        return dice;
       });
+
+      const matchingAfterRoll = newDice.filter(
+        (die) => !die.isHeld && die.value === targetValue,
+      ).length;
+
+      foundMatchingValueRef.current = matchingAfterRoll > matchingBeforeRoll;
+
+      return newDice;
     });
   }
 
@@ -50,13 +64,14 @@ export default function App() {
     });
   }
 
-  const diceElements = diceValues.map((value) => {
+  const diceElements = diceValues.map((value, index) => {
     return (
       <Die
         key={value.id}
         value={value.value}
         isHeld={value.isHeld}
         hold={() => hold(value.id)}
+        isFirstDie={index === 0}
       />
     );
   });
@@ -67,14 +82,49 @@ export default function App() {
     (dice) => dice.value === firstDiceValue,
   );
 
-  if (allHeld && allSameValue) {
-    console.log("Game Won!");
-    gameWon = true;
+  const heldDice = diceValues.filter((die) => die.isHeld);
+
+  const targetValue = heldDice.length > 0 ? heldDice[0].value : null;
+  const foundMatchingValueRef = useRef(false);
+
+  const gameWon = allHeld && allSameValue;
+
+  function resetGame() {
+    if (gameWon) {
+      setDiceValues(generateAllNewDice(6));
+    } else {
+      return;
+    }
   }
+
+  const inputRef = useRef(null);
+
+  const hasRolledRef = useRef(false);
+
+  useEffect(() => {
+    if (gameWon) {
+      inputRef.current.focus();
+    }
+  }, [gameWon]);
+
+  useEffect(() => {
+    if (hasRolledRef.current && foundMatchingValueRef.current && !gameWon) {
+      const firstDie = document.querySelector('[data-first-die="true"]');
+
+      firstDie?.focus();
+    }
+
+    hasRolledRef.current = false;
+  }, [diceValues, gameWon]);
 
   return (
     <>
       {gameWon ? <ConfettiDrop /> : null}
+      <div aria-live="polite" className="sr-only">
+        {gameWon && (
+          <p>Congratulations! You won! Press "New Game" to start again.</p>
+        )}
+      </div>
       <main>
         <h1 className="title">Tenzies</h1>
         <p className="instructions">
@@ -82,7 +132,11 @@ export default function App() {
           current value between rolls.
         </p>
         <div className="dice-container">{diceElements}</div>
-        <button className="roll-dice" onClick={rollDice}>
+        <button
+          className="roll-dice"
+          onClick={gameWon ? resetGame : rollDice}
+          ref={inputRef}
+        >
           {gameWon ? "New Game" : "Roll Dice"}
         </button>
       </main>

@@ -5,6 +5,9 @@ export default function Die(props) {
       className="dice"
       style={props.isHeld ? style : null}
       onClick={props.hold}
+      aria-label={`Die with value ${props.value}, 
+            ${props.isHeld ? "held" : "not held"}`}
+      data-first-die={props.isFirstDie}
     >
       {props.value}
     </button>
